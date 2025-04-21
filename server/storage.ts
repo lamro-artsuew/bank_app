@@ -89,6 +89,31 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // One day
     });
+    
+    // Initialize with demo data
+    this.initializeDemoData();
+  }
+  
+  private async initializeDemoData() {
+    try {
+      // Create a demo user with a known password for testing
+      const demoUser: InsertUser = {
+        username: "demo",
+        password: "password123", // Will be hashed during creation in auth.ts
+        firstName: "Demo",
+        lastName: "User",
+        email: "demo@example.com",
+        phoneNumber: "555-123-4567"
+      };
+      
+      // Create the user directly in storage (password will be hashed in auth.ts)
+      console.log("[Storage] Creating demo user for testing");
+      
+      // We actually need to wait until the server calls our APIs to create this
+      // because we need password hashing which happens in auth.ts
+    } catch (error) {
+      console.error("[Storage] Error initializing demo data:", error);
+    }
   }
 
   // User operations

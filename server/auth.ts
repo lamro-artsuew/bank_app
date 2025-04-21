@@ -5,7 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { User as SelectUser, InsertUser } from "@shared/schema";
 
 declare global {
   namespace Express {
@@ -28,6 +28,88 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+// Function to create a demo user for testing purposes
+async function createDemoUser() {
+  try {
+    // Check if demo user already exists
+    const existingUser = await storage.getUserByUsername("demo");
+    if (existingUser) {
+      console.log("[Auth] Demo user already exists");
+      return;
+    }
+    
+    // Create the demo user
+    const demoUser: InsertUser = {
+      username: "demo",
+      // Password will be hashed
+      password: await hashPassword("password123"),
+      firstName: "Demo",
+      lastName: "User",
+      email: "demo@example.com",
+      phoneNumber: "555-123-4567"
+    };
+    
+    const user = await storage.createUser(demoUser);
+    console.log("[Auth] Demo user created successfully:", user.username);
+    
+    // Create a demo account for the user
+    const demoAccount = await storage.createAccount({
+      userId: user.id,
+      accountType: "checking",
+      accountNumber: "123456789",
+      accountName: "Demo Checking",
+      balance: "10000" // $10,000 starting balance
+    });
+    console.log("[Auth] Demo account created:", demoAccount.accountName);
+    
+    // Add some sample transactions
+    const transactions = [
+      {
+        userId: user.id,
+        accountId: demoAccount.id,
+        amount: "1500",
+        description: "Salary deposit",
+        transactionType: "deposit",
+        category: "Income"
+      },
+      {
+        userId: user.id,
+        accountId: demoAccount.id,
+        amount: "80",
+        description: "Grocery shopping",
+        transactionType: "withdrawal",
+        category: "Groceries"
+      },
+      {
+        userId: user.id,
+        accountId: demoAccount.id,
+        amount: "200",
+        description: "Rent payment",
+        transactionType: "payment",
+        category: "Housing"
+      }
+    ];
+    
+    for (const transaction of transactions) {
+      await storage.createTransaction(transaction as any);
+    }
+    console.log("[Auth] Demo transactions created");
+    
+    // Add a sample bill
+    const demoBill = await storage.createBill({
+      userId: user.id,
+      payee: "Electric Company",
+      amount: "150",
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Due in 7 days
+      status: "pending"
+    });
+    console.log("[Auth] Demo bill created");
+    
+  } catch (error) {
+    console.error("[Auth] Failed to create demo user:", error);
+  }
+}
+
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "finedge-banking-app-secret",
@@ -44,6 +126,9 @@ export function setupAuth(app: Express) {
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
+  
+  // Create a demo user for testing
+  createDemoUser();
 
   passport.use(
     new LocalStrategy(async (username, password, done) => {
