@@ -1,26 +1,3 @@
-# Project Export Instructions
-
-Since the Replit environment doesn't provide a direct "Download as ZIP" option, here are alternative methods to get your project code:
-
-## Option 1: Use Git (Recommended)
-
-If you have Git set up with Replit, you can clone the repository to your local machine:
-
-```bash
-git clone https://github.com/yourusername/yourrepository.git
-```
-
-Replace the URL with your actual repository URL.
-
-## Option 2: Manual File Download
-
-You can download individual files or manually copy and save them:
-
-1. For each important file, click on it in the file explorer
-2. Copy the entire content (Ctrl+A then Ctrl+C)
-3. Paste into a new file on your local computer
-4. Save with the same name and file extension
-
 ### Key Files to Download:
 
 **Server Files:**
