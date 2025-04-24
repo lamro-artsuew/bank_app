@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinEdge Banking API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 18px;
+            color: #666;
+        }
+        h2 {
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #444;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .note {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FinEdge Banking Application</h1>
+        <p>API Integration Documentation</p>
+    </div>
+
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#authentication">Authentication APIs</a></li>
+        <li><a href="#accounts">Account APIs</a></li>
+        <li><a href="#transactions">Transaction APIs</a></li>
+        <li><a href="#bills">Bill Payment APIs</a></li>
+        <li><a href="#cards">Card Management APIs</a></li>
+        <li><a href="#loans">Loan APIs</a></li>
+        <li><a href="#data-models">Data Models</a></li>
+        <li><a href="#security">API Security</a></li>
+        <li><a href="#integration">Integration Examples</a></li>
+    </ol>
+
+    <h2 id="introduction">1. Introduction</h2>
+    <p>
+        The FinEdge Banking Application provides a comprehensive set of REST APIs for integrating 
+        with banking services. This documentation outlines all available endpoints, request/response 
+        formats, and provides integration examples.
+    </p>
+    <p>
+        The API uses JSON for data exchange and standard HTTP response codes to indicate success or failure.
+    </p>
+
+    <h3>Base URL</h3>
+    <p>All API endpoints are relative to the base URL of your deployment:</p>
+    <pre>https://your-deployment-url.replit.app</pre>
+
+    <h2 id="authentication">2. Authentication APIs</h2>
+    <p>
+        FinEdge uses session-based authentication. A session cookie is issued upon successful login
+        which must be included in subsequent requests.
+    </p>
+
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+            <th>Request Body</th>
+            <th>Response</th>
+        </tr>
+        <tr>
+            <td><code>/api/register</code></td>
+            <td>POST</td>
+            <td>Create a new user account</td>
+            <td><code>{ username, password, firstName, lastName, email, phoneNumber }</code></td>
+            <td>User object (without password)</td>
+        </tr>
+        <tr>
+            <td><code>/api/login</code></td>
+            <td>POST</td>
+            <td>Authenticate user</td>
+            <td><code>{ username, password }</code></td>
+            <td>User object (without password)</td>
+        </tr>
+        <tr>
+            <td><code>/api/logout</code></td>
+            <td>POST</td>
+            <td>End user session</td>
+            <td>None</td>
+            <td>200 OK</td>
+        </tr>
+        <tr>
+            <td><code>/api/user</code></td>
+            <td>GET</td>
+            <td>Get current user info</td>
+            <td>None</td>
+            <td>User object (without password)</td>
+        </tr>
+    </table>
+
+    <h3>Example: User Registration</h3>
+    <pre>
+POST /api/register
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "password": "secureP@ss123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "555-123-4567"
+}
+    </pre>
+
+    <h3>Example: Login</h3>
+    <pre>
+POST /api/login
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "password": "secureP@ss123"
+}
+    </pre>
+
+    <h2 id="accounts">3. Account APIs</h2>
+    <p>
+        These endpoints allow for managing bank accounts. All endpoints require authentication.
+    </p>
+
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+            <th>Request Body</th>
+            <th>Response</th>
+        </tr>
+        <tr>
+            <td><code>/api/accounts</code></td>
+            <td>GET</td>
+            <td>Get all user accounts</td>
+            <td>None</td>
+            <td>Array of account objects</td>
+        </tr>
+        <tr>
+            <td><code>/api/accounts/:id</code></td>
+            <td>GET</td>
+            <td>Get specific account</td>
+            <td>None</td>
+            <td>Account object</td>
+        </tr>
+        <tr>
+            <td><code>/api/accounts</code></td>
+            <td>POST</td>
+            <td>Create new account</td>
+            <td><code>{ accountType, accountNumber, accountName, balance, cardType, validThru }</code></td>
+            <td>Created account object</td>
+        </tr>
+        <tr>
+            <td><code>/api/accounts/:id</code></td>
+            <td>PATCH</td>
+            <td>Update account</td>
+            <td>Fields to update</td>
+            <td>Updated account object</td>
+        </tr>
+        <tr>
+            <td><code>/api/accounts/:id</code></td>
+            <td>DELETE</td>
+            <td>Delete account</td>
+            <td>None</td>
+            <td>204 No Content</td>
+        </tr>
+    </table>
+
+    <h3>Example: Create Account</h3>
+    <pre>
+POST /api/accounts
+Content-Type: application/json
+
+{
+  "accountType": "checking",
+  "accountNumber": "987654321",
+  "accountName": "Primary Checking",
+  "balance": "5000"
+}
+    </pre>
+
+    <h2 id="transactions">4. Transaction APIs</h2>
+    <p>
+        These endpoints allow for managing financial transactions. All endpoints require authentication.
+    </p>
+
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+            <th>Request Body</th>
+            <th>Response</th>
+        </tr>
+        <tr>
+            <td><code>/api/transactions</code></td>
+            <td>GET</td>
+            <td>Get all user transactions</td>
+            <td>None</td>
+            <td>Array of transaction objects</td>
+        </tr>
+        <tr>
+            <td><code>/api/accounts/:id/transactions</code></td>
+            <td>GET</td>
+            <td>Get account transactions</td>
+            <td>None</td>
+            <td>Array of transaction objects</td>
+        </tr>
+        <tr>
+            <td><code>/api/transactions</code></td>
+            <td>POST</td>
+            <td>Create transaction</td>
+            <td><code>{ accountId, amount, description, transactionType, category, recipientAccountId? }</code></td>
+            <td>Created transaction object</td>
+        </tr>
+    </table>
+
+    <h3>Example: Create Transaction</h3>
+    <pre>
+POST /api/transactions
+Content-Type: application/json
+
+{
+  "accountId": 1,
+  "amount": "150.75",
+  "description": "Grocery Shopping",
+  "transactionType": "withdrawal",
+  "category": "Food & Groceries"
+}
+    </pre>
+
+    <h3>Example: Create Transfer</h3>
+    <pre>
+POST /api/transactions
+Content-Type: application/json
+
+{
+  "accountId": 1,
+  "recipientAccountId": 2,
+  "amount": "500",
+  "description": "Transfer to Savings",
+  "transactionType": "transfer",
+  "category": "Savings"
+}
+    </pre>
+
+    <h2 id="bills">5. Bill Payment APIs</h2>
+    <p>
+        These endpoints allow for managing bill payments. All endpoints require authentication.
+    </p>
+
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+            <th>Request Body</th>
+            <th>Response</th>
+        </tr>
+        <tr>
+            <td><code>/api/bills</code></td>
+            <td>GET</td>
+            <td>Get all user bills</td>
+            <td>None</td>
+            <td>Array of bill objects</td>
+        </tr>
+        <tr>
+            <td><code>/api/bills/:id</code></td>
+            <td>GET</td>
+            <td>Get specific bill</td>
+            <td>None</td>
+            <td>Bill object</td>
+        </tr>
+        <tr>
+            <td><code>/api/bills</code></td>
+            <td>POST</td>
+            <td>Create new bill</td>
+            <td><code>{ payee, amount, dueDate, status, isRecurring, recurringInterval }</code></td>
+            <td>Created bill object</td>
+        </tr>
+        <tr>
+            <td><code>/api/bills/:id</code></td>
+            <td>PATCH</td>
+            <td>Update bill</td>
+            <td>Fields to update</td>
+            <td>Updated bill object</td>
+        </tr>
+        <tr>
+            <td><code>/api/bills/:id</code></td>
+            <td>DELETE</td>
+            <td>Delete bill</td>
+            <td>None</td>
+            <td>204 No Content</td>
+        </tr>
+        <tr>
+            <td><code>/api/bills/:id/pay</code></td>
+            <td>POST</td>
+            <td>Pay a bill</td>
+            <td><code>{ accountId }</code></td>
+            <td>Transaction and bill objects</td>
+        </tr>
+    </table>
+
+    <h3>Example: Create Bill</h3>
+    <pre>
+POST /api/bills
+Content-Type: application/json
+
+{
+  "payee": "Electric Company",
+  "amount": "125.50",
+  "dueDate": "2023-05-15T00:00:00.000Z",
+  "status": "pending",
+  "isRecurring": true,
+  "recurringInterval": "monthly"
+}
+    </pre>
+
+    <h3>Example: Pay Bill</h3>
+    <pre>
+POST /api/bills/1/pay
+Content-Type: application/json
+
+{
+  "accountId": 1
+}
+    </pre>
+
+    <h2 id="cards">6. Card Management APIs</h2>
+    <p>
+        These endpoints allow for managing payment cards. All endpoints require authentication.
+    </p>
+
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+            <th>Request Body</th>
+            <th>Response</th>
+        </tr>
+        <tr>
+            <td><code>/api/cards</code></td>
+            <td>GET</td>
+            <td>Get all user cards</td>
+            <td>None</td>
+            <td>Array of card objects</td>
+        </tr>
+        <tr>
+            <td><code>/api/accounts/:id/cards</code></td>
+            <td>GET</td>
+            <td>Get account cards</td>
+            <td>None</td>
+            <td>Array of card objects</td>
+        </tr>
+        <tr>
+            <td><code>/api/cards</code></td>
+            <td>POST</td>
+            <td>Create new card</td>
+            <td><code>{ accountId, cardNumber, cardType, cardNetwork, expiryDate, cvv, creditLimit }</code></td>
+            <td>Created card object</td>
+        </tr>
+        <tr>
+            <td><code>/api/cards/:id</code></td>
+            <td>PATCH</td>
+            <td>Update card</td>
+            <td>Fields to update</td>
+            <td>Updated card object</td>
+        </tr>
+    </table>
+
+    <h3>Example: Create Card</h3>
+    <pre>
+POST /api/cards
+Content-Type: application/json
+
+{
+  "accountId": 1,
+  "cardNumber": "4111111111111111",
+  "cardType": "debit",
+  "cardNetwork": "Visa",
+  "expiryDate": "12/25",
+  "cvv": "123"
+}
+    </pre>
+
+    <h2 id="loans">7. Loan APIs</h2>
+    <p>
+        These endpoints allow for managing loans. All endpoints require authentication.
+    </p>
+
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+            <th>Request Body</th>
+            <th>Response</th>
+        </tr>
+        <tr>
+            <td><code>/api/loans</code></td>
+            <td>GET</td>
+            <td>Get all user loans</td>
+            <td>None</td>
+            <td>Array of loan objects</td>
+        </tr>
+        <tr>
+            <td><code>/api/loans/:id</code></td>
+            <td>GET</td>
+            <td>Get specific loan</td>
+            <td>None</td>
+            <td>Loan object</td>
+        </tr>
+        <tr>
+            <td><code>/api/loans</code></td>
+            <td>POST</td>
+            <td>Apply for loan</td>
+            <td><code>{ loanType, amount, interestRate, term, startDate, endDate, monthlyPayment }</code></td>
+            <td>Created loan object</td>
+        </tr>
+        <tr>
+            <td><code>/api/loans/:id</code></td>
+            <td>PATCH</td>
+            <td>Update loan</td>
+            <td>Fields to update</td>
+            <td>Updated loan object</td>
+        </tr>
+    </table>
+
+    <h3>Example: Apply for Loan</h3>
+    <pre>
+POST /api/loans
+Content-Type: application/json
+
+{
+  "loanType": "personal",
+  "amount": "10000",
+  "interestRate": "5.99",
+  "term": 36
+}
+    </pre>
+
+    <h2 id="data-models">8. Data Models</h2>
+
+    <h3>User Model</h3>
+    <pre>
+{
+  id: number;
+  username: string;
+  password: string; // Hashed, never sent to client
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string | null;
+  profileImage: string | null;
+}
+    </pre>
+
+    <h3>Account Model</h3>
+    <pre>
+{
+  id: number;
+  userId: number;
+  accountType: 'checking' | 'savings' | 'investment' | 'credit';
+  accountNumber: string;
+  accountName: string;
+  balance: string; // Numeric string for precision
+  isActive: boolean;
+  cardType: string | null;
+  validThru: string | null;
+}
+    </pre>
+
+    <h3>Transaction Model</h3>
+    <pre>
+{
+  id: number;
+  userId: number;
+  accountId: number;
+  amount: string; // Numeric string for precision
+  description: string;
+  transactionType: 'deposit' | 'withdrawal' | 'transfer' | 'payment';
+  category: string | null;
+  createdAt: Date;
+  recipientAccountId: number | null;
+}
+    </pre>
+
+    <h3>Bill Model</h3>
+    <pre>
+{
+  id: number;
+  userId: number;
+  payee: string;
+  amount: string; // Numeric string for precision
+  dueDate: Date;
+  status: 'pending' | 'paid' | 'overdue';
+  isRecurring: boolean | null;
+  recurringInterval: string | null;
+}
+    </pre>
+
+    <h3>Card Model</h3>
+    <pre>
+{
+  id: number;
+  userId: number;
+  accountId: number;
+  cardNumber: string;
+  cardType: 'debit' | 'credit';
+  cardNetwork: string;
+  expiryDate: string;
+  cvv: string;
+  status: 'active' | 'inactive' | 'blocked';
+  creditLimit: string | null; // Numeric string for precision
+}
+    </pre>
+
+    <h3>Loan Model</h3>
+    <pre>
+{
+  id: number;
+  userId: number;
+  loanType: string;
+  amount: string; // Numeric string for precision
+  interestRate: string; // Numeric string for precision
+  term: number; // In months
+  startDate: Date | null;
+  endDate: Date | null;
+  status: 'pending' | 'approved' | 'rejected' | 'active' | 'closed';
+  monthlyPayment: string | null; // Numeric string for precision
+}
+    </pre>
+
+    <h2 id="security">9. API Security</h2>
+    <p>
+        All API endpoints (except <code>/api/login</code> and <code>/api/register</code>) require authentication. 
+        The system uses session-based authentication with the following security measures:
+    </p>
+
+    <ul>
+        <li>Password hashing using scrypt with salt</li>
+        <li>CSRF protection</li>
+        <li>Session expiration (24 hours)</li>
+        <li>Secure, HTTP-only cookies in production</li>
+    </ul>
+
+    <div class="note">
+        <strong>Note:</strong> Always use HTTPS in production environments to protect sensitive data in transit.
+    </div>
+
+    <h2 id="integration">10. Integration Examples</h2>
+
+    <h3>Authentication and Account Retrieval</h3>
+    <pre>
+async function loginAndFetchAccounts(username, password) {
+  // Login
+  const loginResponse = await fetch('https://your-deployment-url.replit.app/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // Important for session cookies
+    body: JSON.stringify({ username, password })
+  });
+  
+  if (!loginResponse.ok) {
+    throw new Error('Authentication failed');
+  }
+  
+  const user = await loginResponse.json();
+  console.log('Logged in as:', user.firstName, user.lastName);
+  
+  // Fetch accounts
+  const accountsResponse = await fetch('https://your-deployment-url.replit.app/api/accounts', {
+    credentials: 'include' // Important for session cookies
+  });
+  
+  if (!accountsResponse.ok) {
+    throw new Error('Failed to fetch accounts');
+  }
+  
+  const accounts = await accountsResponse.json();
+  return accounts;
+}
+    </pre>
+
+    <h3>Making a Transfer Between Accounts</h3>
+    <pre>
+async function transferBetweenAccounts(fromAccountId, toAccountId, amount, description) {
+  const response = await fetch('https://your-deployment-url.replit.app/api/transactions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      accountId: fromAccountId,
+      recipientAccountId: toAccountId,
+      amount: amount.toString(),
+      description: description || 'Account transfer',
+      transactionType: 'transfer',
+      category: 'Transfer'
+    })
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Transfer failed');
+  }
+  
+  return await response.json();
+}
+    </pre>
+
+    <h3>Creating and Paying a Bill</h3>
+    <pre>
+async function createAndPayBill(payee, amount, dueDate, accountId) {
+  // 1. Create the bill
+  const createResponse = await fetch('https://your-deployment-url.replit.app/api/bills', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      payee,
+      amount: amount.toString(),
+      dueDate: new Date(dueDate).toISOString(),
+      status: 'pending'
+    })
+  });
+  
+  if (!createResponse.ok) {
+    throw new Error('Failed to create bill');
+  }
+  
+  const bill = await createResponse.json();
+  
+  // 2. Pay the bill
+  const payResponse = await fetch(`https://your-deployment-url.replit.app/api/bills/${bill.id}/pay`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ accountId })
+  });
+  
+  if (!payResponse.ok) {
+    throw new Error('Failed to pay bill');
+  }
+  
+  return await payResponse.json();
+}
+    </pre>
+
+    <footer>
+        <p>FinEdge Banking Application API Documentation</p>
+        <p>© 2023 FinEdge. All rights reserved.</p>
+        <p>Generated on April 21, 2025</p>
+    </footer>
+</body>
+</html>
